@@ -1,18 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TiendaVirtual.Data;
 using TiendaVirtual.Models;
 
 namespace TiendaVirtual.Controllers
 {
     public class ProductoController : Controller
     {
-        public IActionResult Index()
-        {
-            var productos = new List <Producto>
-                {
-                    new Producto { Id = 1, Nombre = "Laptop", Precio = 3000, Stock = 5 },
-                    new Producto { Id = 2, Nombre = "Mouse", Precio = 80, Stock = 0 }
-                };
+        private readonly TiendaContext _context;
 
+        public ProductoController(TiendaContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var productos = await _context.Productos
+                .Include(p => p.Categoria)
+                .ToListAsync();
             return View(productos);
         }
     }
