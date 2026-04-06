@@ -8,7 +8,7 @@ builder.Services.AddControllersWithViews();
 
 // Registrar Entity Framework
 builder.Services.AddDbContext<TiendaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TiendaConnection")));
 
 var app = builder.Build();
 

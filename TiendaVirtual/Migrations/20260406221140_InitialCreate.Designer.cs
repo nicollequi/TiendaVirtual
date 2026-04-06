@@ -11,8 +11,8 @@ using TiendaVirtual.Data;
 namespace TiendaVirtual.Migrations
 {
     [DbContext(typeof(TiendaContext))]
-    [Migration("20260404190647_QuitarSeed")]
-    partial class QuitarSeed
+    [Migration("20260406221140_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
