@@ -1,19 +1,23 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model List<TiendaVirtual.Models.Producto>
+﻿@model List<TiendaVirtual.Models.Producto>
+
 @{
- 
+    ViewData["Title"] = "Lista de Productos";
+}
 
-    <h2>Lista de Productos</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Lista de Productos</h2>
+        <a asp-action="Create" class="btn btn-primary">+ Nuevo Producto</a>
+    </div>
 
-    <table class="table">
-        <thead>
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
             <tr>
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Estado</th>
+                <th class="text-center">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -26,16 +30,20 @@
                     <td>
                         @if (item.TieneStock())
                         {
-                            <span class="text-success">Disponible</span>
+                            <span class="badge bg-success">Disponible</span>
                         }
                         else
                         {
-                            <span class="text-danger">Agotado</span>
+                            <span class="badge bg-danger">Agotado</span>
                         }
+                    </td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detalles</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-}
-
+</div>
