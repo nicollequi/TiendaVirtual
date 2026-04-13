@@ -1,0 +1,26 @@
+﻿@model TiendaVirtual.Models.Producto
+
+<div class="container mt-4">
+    <h2>Eliminar Producto</h2>
+
+    <div class="alert alert-danger">
+        ¿Está seguro de que desea eliminar este producto?
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+
+        <dt class="col-sm-3">Precio</dt>
+        <dd class="col-sm-9">@Model.Precio</dd>
+
+        <dt class="col-sm-3">Stock</dt>
+        <dd class="col-sm-9">@Model.Stock</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+        <a href="/Producto" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

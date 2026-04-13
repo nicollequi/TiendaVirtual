@@ -22,23 +22,23 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
             return View(await _context.Usuarios.ToListAsync());
         }
 
         // GET: Usuarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
+            if (id == null) return NotFound();
 
             var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
+            if (usuario == null) return NotFound();
 
             return View(usuario);
         }
@@ -46,12 +46,13 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios/Create
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
             return View();
         }
 
         // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nombre,Correo,Rol,celular")] Usuario usuario)
@@ -68,30 +69,23 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
+            if (id == null) return NotFound();
 
             var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
+            if (usuario == null) return NotFound();
+
             return View(usuario);
         }
 
         // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Correo,Rol,celular")] Usuario usuario)
         {
-            if (id != usuario.Id)
-            {
-                return NotFound();
-            }
+            if (id != usuario.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -103,13 +97,9 @@ namespace TiendaVirtual.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UsuarioExists(usuario.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -119,17 +109,14 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
+            if (id == null) return NotFound();
 
             var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
+            if (usuario == null) return NotFound();
 
             return View(usuario);
         }
@@ -141,9 +128,7 @@ namespace TiendaVirtual.Controllers
         {
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario != null)
-            {
                 _context.Usuarios.Remove(usuario);
-            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -15,22 +15,31 @@ namespace TiendaVirtual.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        // LISTAR PRODUCTOS
+        public IActionResult Index()
         {
-            var productos = await _context.Productos
+            if (HttpContext.Session.GetString("Usuario") == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            var productos = _context.Productos
                 .Include(p => p.Categoria)
-                .ToListAsync();
+                .ToList();
             return View(productos);
         }
 
-        // GET
+        // FORMULARIO CREAR
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre");
             return View();
         }
 
-        // POST
+        // GUARDAR
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Producto producto)
@@ -45,9 +54,13 @@ namespace TiendaVirtual.Controllers
             return View(producto);
         }
 
-        // GET
+        // FORMULARIO EDITAR
         public async Task<IActionResult> Edit(int? id)
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             if (id == null) return NotFound();
             var producto = await _context.Productos.FindAsync(id);
             if (producto == null) return NotFound();
@@ -55,7 +68,7 @@ namespace TiendaVirtual.Controllers
             return View(producto);
         }
 
-        // POST
+        // ACTUALIZAR
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Producto producto)
@@ -71,15 +84,19 @@ namespace TiendaVirtual.Controllers
             return View(producto);
         }
 
-        // GET
+        // FORMULARIO ELIMINAR
         public IActionResult Delete(int id)
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             var producto = _context.Productos.Find(id);
             if (producto == null) return NotFound();
             return View(producto);
         }
 
-        // POST
+        // ELIMINAR
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)

@@ -7,6 +7,9 @@ namespace TiendaVirtual.Controllers
     {
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
             var categorias = new List<Categoria>
             {
                 new Categoria { Id = 1, Nombre = "Electrónica", Descripcion = "Productos electrónicos" },
@@ -14,7 +17,6 @@ namespace TiendaVirtual.Controllers
                 new Categoria { Id = 3, Nombre = "", Descripcion = "Categoría sin nombre" },
                 new Categoria { Id = 4, Nombre = null, Descripcion = "Otra sin nombre" }
             };
-
             return View(categorias);
         }
     }
