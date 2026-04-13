@@ -11,7 +11,7 @@ using TiendaVirtual.Data;
 namespace TiendaVirtual.Migrations
 {
     [DbContext(typeof(TiendaContext))]
-    [Migration("20260318015618_InitialCreate")]
+    [Migration("20260406221140_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -74,6 +74,35 @@ namespace TiendaVirtual.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Productos");
+                });
+
+            modelBuilder.Entity("TiendaVirtual.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rol")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("celular")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("TiendaVirtual.Models.Producto", b =>
