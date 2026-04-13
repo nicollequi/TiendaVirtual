@@ -21,53 +21,6 @@ namespace TiendaVirtual.Controllers
                 .Include(p => p.Categoria)
                 .ToListAsync();
             return View(productos);
-
-
-        }
-        //formulario crear
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        //guardar
-        [HttpPost]
-        public IActionResult Create(Producto producto)
-        {
-            _context.Productos.Add(producto);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
-        }
-        //formulario editar
-        public IActionResult Edit(int id)
-        {
-            var producto = _context.Productos.Find(id);
-            ViewBag.Categorias = _context.Categorias.ToList();
-
-            return View(producto);
-
-        }
-
-        //actualizar
-        [HttpPost]
-        public IActionResult Edit(Producto producto)
-        {
-            _context.Productos.Update(producto);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
-        }
-
-        //eliminar
-        public IActionResult Delete(int id)
-        {
-            var producto = _context.Productos.Find(id);
-
-            _context.Productos.Remove(producto);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index"); 
         }
 
         // GET
@@ -96,10 +49,8 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-
             var producto = await _context.Productos.FindAsync(id);
             if (producto == null) return NotFound();
-
             ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre", producto.CategoriaId);
             return View(producto);
         }
@@ -110,7 +61,6 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Edit(int id, Producto producto)
         {
             if (id != producto.Id) return NotFound();
-
             if (ModelState.IsValid)
             {
                 _context.Update(producto);
@@ -120,7 +70,24 @@ namespace TiendaVirtual.Controllers
             ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre", producto.CategoriaId);
             return View(producto);
         }
+
+        // GET
+        public IActionResult Delete(int id)
+        {
+            var producto = _context.Productos.Find(id);
+            if (producto == null) return NotFound();
+            return View(producto);
+        }
+
+        // POST
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var producto = _context.Productos.Find(id);
+            _context.Productos.Remove(producto);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }
-
-
