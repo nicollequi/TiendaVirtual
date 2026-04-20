@@ -1,0 +1,15 @@
+﻿@model TiendaVirtual.Models.Categoria
+
+<div class="container mt-4">
+    <h2>Eliminar Categoría</h2>
+    <div class="alert alert-danger">¿Está seguro de que desea eliminar esta categoría?</div>
+
+    <p><strong>Nombre:</strong> @Model.Nombre</p>
+    <p><strong>Descripción:</strong> @Model.Descripcion</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+        <a href="/Categoria" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
