@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.ComponentModel.DataAnnotations;
 
 namespace TiendaVirtual.Models
 {
@@ -7,7 +8,11 @@ namespace TiendaVirtual.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Correo { get; set; }
+        public string Contraseña { get; set; }
         public string Rol { get; set; }
+
+
+
 
         [Required]
         [RegularExpression(@"^3\d{9}$",

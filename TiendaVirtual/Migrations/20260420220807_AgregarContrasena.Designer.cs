@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TiendaVirtual.Data;
 
@@ -10,9 +11,11 @@ using TiendaVirtual.Data;
 namespace TiendaVirtual.Migrations
 {
     [DbContext(typeof(TiendaContext))]
-    partial class TiendaContextModelSnapshot : ModelSnapshot
+    [Migration("20260420220807_AgregarContrasena")]
+    partial class AgregarContrasena
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
