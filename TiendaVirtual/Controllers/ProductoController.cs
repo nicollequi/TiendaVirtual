@@ -19,9 +19,8 @@ namespace TiendaVirtual.Controllers
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-            {
                 return RedirectToAction("Index", "Login");
-            }
+
             var productos = _context.Productos
                 .Include(p => p.Categoria)
                 .ToList();
@@ -32,9 +31,8 @@ namespace TiendaVirtual.Controllers
         public IActionResult Create()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-            {
                 return RedirectToAction("Index", "Login");
-            }
+
             ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre");
             return View();
         }
@@ -58,9 +56,8 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-            {
                 return RedirectToAction("Index", "Login");
-            }
+
             if (id == null) return NotFound();
             var producto = await _context.Productos.FindAsync(id);
             if (producto == null) return NotFound();
@@ -84,13 +81,18 @@ namespace TiendaVirtual.Controllers
             return View(producto);
         }
 
-        // FORMULARIO ELIMINAR
+        // CONFIRMAR ELIMINAR
         public IActionResult Delete(int id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-            {
                 return RedirectToAction("Index", "Login");
-            }
+
+            var rol = HttpContext.Session.GetString("Rol");
+
+            // SOLO ADMIN PUEDE ELIMINAR
+            if (rol != "administrador")
+                return RedirectToAction("Index");
+
             var producto = _context.Productos.Find(id);
             if (producto == null) return NotFound();
             return View(producto);
