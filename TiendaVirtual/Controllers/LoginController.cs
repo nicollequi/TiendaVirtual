@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using TiendaVirtual.Data;
+using TiendaVirtual.Helpers;
 using TiendaVirtual.Models;
 
 namespace TiendaVirtual.Controllers
@@ -23,8 +24,10 @@ namespace TiendaVirtual.Controllers
         [HttpPost]
         public IActionResult Index(string correo, string clave)
         {
+            string claveHash = HashHelper.ObtenerHash(clave); 
+
             var usuario = _context.Usuarios
-    .FirstOrDefault(u => u.Correo == correo && u.Contraseña == clave);
+    .FirstOrDefault(u => u.Correo == correo && u.Contraseña == claveHash);
             if (usuario != null)
             {
                 HttpContext.Session.SetString("Usuario", usuario.Nombre);
