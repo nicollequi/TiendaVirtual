@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TiendaVirtual.Data;
+using TiendaVirtual.Helpers;
 using TiendaVirtual.Models;
 
 namespace TiendaVirtual.Controllers
@@ -49,20 +50,28 @@ namespace TiendaVirtual.Controllers
             if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
+            // ✅ Desplegable de roles
+            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
             return View();
         }
 
         // POST: Usuarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Correo,Rol,celular")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("Id,Nombre,Correo,Contraseña,Rol,Celular")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
+                // ✅ Hash aplicado correctamente antes de guardar
+                usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
+
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            // ✅ Recargar roles si hay error de validación
+            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
             return View(usuario);
         }
 
@@ -77,13 +86,15 @@ namespace TiendaVirtual.Controllers
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null) return NotFound();
 
+            // ✅ Desplegable de roles en edición
+            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuario.Rol);
             return View(usuario);
         }
 
         // POST: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Correo,Rol,celular")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Correo,Contraseña,Rol,Celular")] Usuario usuario)
         {
             if (id != usuario.Id) return NotFound();
 
@@ -91,6 +102,9 @@ namespace TiendaVirtual.Controllers
             {
                 try
                 {
+                    // ✅ Hash también en edición si se cambia contraseña
+                    usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
+
                     _context.Update(usuario);
                     await _context.SaveChangesAsync();
                 }
@@ -103,6 +117,8 @@ namespace TiendaVirtual.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuario.Rol);
             return View(usuario);
         }
 
