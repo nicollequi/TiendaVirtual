@@ -24,7 +24,7 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Index", "Create");
 
             return View(await _context.Usuarios.ToListAsync());
         }
@@ -32,25 +32,24 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Login");
+            if (HttpContext.Session.GetString("Usuarios") == null)
+                return RedirectToAction("Index", "Create");
 
             if (id == null) return NotFound();
 
-            var usuario = await _context.Usuarios
+            var usuarios = await _context.Usuarios
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null) return NotFound();
+            if (usuarios == null) return NotFound();
 
-            return View(usuario);
+            return View(usuarios);
         }
 
         // GET: Usuarios/Create
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Login");
+            if (HttpContext.Session.GetString("Usuarios") == null)
+                return RedirectToAction("Index", "Create");
 
-            // ✅ Desplegable de roles
             ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
             return View();
         }
@@ -58,37 +57,34 @@ namespace TiendaVirtual.Controllers
         // POST: Usuarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Correo,Contraseña,Rol,Celular")] Usuario usuario)
+        public ActionResult Create(Usuario usuarios)
         {
             if (ModelState.IsValid)
             {
-                // ✅ Hash aplicado correctamente antes de guardar
-                usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
-
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                usuarios.Contraseña = HashHelper.ObtenerHash(usuarios.Contraseña);
+                _context.Usuarios.Add(usuarios);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
 
-            // ✅ Recargar roles si hay error de validación
+            // Recargar roles si hay error de validación
             ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
-            return View(usuario);
+            return View(usuarios);
         }
 
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Login");
+            if (HttpContext.Session.GetString("Usuarios") == null)
+                return RedirectToAction("Index", "Create");
 
             if (id == null) return NotFound();
 
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null) return NotFound();
+            var usuarios = await _context.Usuarios.FindAsync(id);
+            if (usuarios == null) return NotFound();
 
-            // ✅ Desplegable de roles en edición
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuario.Rol);
-            return View(usuario);
+            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuarios.Rol);
+            return View(usuarios);
         }
 
         // POST: Usuarios/Edit/5
@@ -102,7 +98,6 @@ namespace TiendaVirtual.Controllers
             {
                 try
                 {
-                    // ✅ Hash también en edición si se cambia contraseña
                     usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
 
                     _context.Update(usuario);
@@ -126,7 +121,7 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Index", "Create");
 
             if (id == null) return NotFound();
 

@@ -11,8 +11,8 @@ namespace TiendaVirtual.Models
         public string Nombre { get; set; }
 
         [StringLength(200)]
-        public string Descripcion { get; set; }  // ← agrega esta línea
+        public string Descripcion { get; set; }
 
-        public List<Producto> Productos { get; set; }
+        public List<Producto>? Productos { get; set; }
     }
 }

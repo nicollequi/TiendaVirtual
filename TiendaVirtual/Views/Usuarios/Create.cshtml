@@ -1,55 +1,52 @@
 ﻿@model TiendaVirtual.Models.Usuario
-
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Usuario";
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
+    <h2>Crear Usuario</h2>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
 
-<h4>Usuario</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Correo" class="control-label"></label>
-                <input asp-for="Correo" class="form-control" />
-                <span asp-validation-for="Correo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Rol" class="control-label"></label>
-                <input asp-for="Rol" class="form-control" />
-                <span asp-validation-for="Rol" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Rol" class="form-label">Rol</label>
-                <select asp-for="Rol" asp-items="ViewBag.Roles" class="form-select">
-                    <option value="">-- Seleccione un rol --</option>
-                </select>
-                <span asp-validation-for="Rol" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="celular" class="control-label"></label>
-                <input asp-for="celular" class="form-control" />
-                <span asp-validation-for="celular" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="mb-3">
+            <label asp-for="Nombre" class="form-label">Nombre</label>
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="mb-3">
+            <label asp-for="Correo" class="form-label">Correo</label>
+            <input asp-for="Correo" class="form-control" />
+            <span asp-validation-for="Correo" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Celular" class="form-label">Celular</label>
+            <input asp-for="Celular" class="form-control" />
+            <span asp-validation-for="Celular" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Rol" class="form-label">Rol</label>
+            <select asp-for="Rol" asp-items="ViewBag.Roles" class="form-select">
+                <option value="">-- Seleccione un rol --</option>
+            </select>
+            <span asp-validation-for="Rol" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Contraseña" class="form-label">Clave</label>
+            <input asp-for="Contraseña" type="password" class="form-control" />
+            <span asp-validation-for="Contraseña" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a asp-action="Index" class="btn btn-secondary">Volver</a>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
