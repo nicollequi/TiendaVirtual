@@ -24,7 +24,7 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Create");
+                return RedirectToAction("Index", "Login");
 
             return View(await _context.Usuarios.ToListAsync());
         }
@@ -32,8 +32,8 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Create");
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
 
             if (id == null) return NotFound();
 
@@ -47,10 +47,10 @@ namespace TiendaVirtual.Controllers
         // GET: Usuarios/Create
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Create");
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
 
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
+            ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" });
             return View();
         }
 
@@ -68,22 +68,22 @@ namespace TiendaVirtual.Controllers
             }
 
             // Recargar roles si hay error de validación
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
+            ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" });
             return View(usuarios);
         }
 
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Create");
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
 
             if (id == null) return NotFound();
 
             var usuarios = await _context.Usuarios.FindAsync(id);
             if (usuarios == null) return NotFound();
 
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuarios.Rol);
+            ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" }, usuarios.Rol);
             return View(usuarios);
         }
 
@@ -113,7 +113,7 @@ namespace TiendaVirtual.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuario.Rol);
+            ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" }, usuario.Rol);
             return View(usuario);
         }
 
@@ -121,7 +121,7 @@ namespace TiendaVirtual.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Create");
+                return RedirectToAction("Index", "Login");
 
             if (id == null) return NotFound();
 

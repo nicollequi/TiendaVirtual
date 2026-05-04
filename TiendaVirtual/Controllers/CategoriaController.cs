@@ -17,17 +17,17 @@ namespace TiendaVirtual.Controllers
         // LISTAR
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
+            if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
-            var categorias = _context.Categorias.ToList();
+            var categorias = _context.Categorias.Include(c => c.Productos).ToList();
             return View(categorias);
         }
 
         // FORMULARIO CREAR
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
+            if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
             return View();
@@ -50,7 +50,7 @@ namespace TiendaVirtual.Controllers
         // FORMULARIO EDITAR
         public IActionResult Edit(int id)
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
+            if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
             var categoria = _context.Categorias.Find(id);
@@ -76,7 +76,7 @@ namespace TiendaVirtual.Controllers
         // CONFIRMAR ELIMINAR
         public IActionResult Delete(int id)
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
+            if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
             var categoria = _context.Categorias.Find(id);

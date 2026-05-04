@@ -1,0 +1,45 @@
+﻿@model List<TiendaVirtual.Models.Categoria>
+
+@{
+    ViewData["Title"] = "Lista de Categorías";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Lista de Categorías</h2>
+
+    <a class="btn btn-success mb-3" href="/Categoria/Create">+ Nueva Categoría</a>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Descripcion</td>
+                    <td>
+                        @if (item.Productos == null || !item.Productos.Any())
+                        {
+                            <span class="badge bg-secondary">Sin productos</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Activa</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-warning btn-sm" href="/Categoria/Edit/@item.Id">Editar</a>
+                        <a class="btn btn-danger btn-sm" href="/Categoria/Delete/@item.Id">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
