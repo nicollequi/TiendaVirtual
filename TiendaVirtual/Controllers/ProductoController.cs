@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TiendaVirtual.Data;
@@ -13,29 +13,6 @@ namespace TiendaVirtual.Controllers
         public ProductoController(TiendaContext context)
         {
             _context = context;
-        }
-
-        // METODO CREAR
-        [HttpPost]
-        public IActionResult Create(Producto producto, IFormFile imagen)
-        {
-            if (imagen != null)
-            {
-                var ruta = Path.Combine(Directory.GetCurrentDirectory(),
-                    "wwwroot/images", imagen.FileName);
-
-                using (var stream = new FileStream(ruta, FileMode.Create))
-                {
-                    imagen.CopyTo(stream);
-                }
-
-                producto.ImagenUrl = "/images/" + imagen.FileName;
-            }
-
-            _context.Productos.Add(producto);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
         }
 
         // LISTAR PRODUCTOS
@@ -60,19 +37,31 @@ namespace TiendaVirtual.Controllers
             return View();
         }
 
-        // GUARDAR
+        // GUARDAR PRODUCTO CON IMAGEN
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Producto producto)
+        public IActionResult Create(Producto producto, IFormFile imagen)
         {
-            if (ModelState.IsValid)
+            if (imagen != null)
             {
-                _context.Add(producto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var carpeta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+
+                if (!Directory.Exists(carpeta))
+                    Directory.CreateDirectory(carpeta);
+
+                var ruta = Path.Combine(carpeta, imagen.FileName);
+
+                using (var stream = new FileStream(ruta, FileMode.Create))
+                {
+                    imagen.CopyTo(stream);
+                }
+
+                producto.ImagenUrl = "/images/" + imagen.FileName;
             }
-            ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre");
-            return View(producto);
+
+            _context.Productos.Add(producto);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // FORMULARIO EDITAR
@@ -88,20 +77,41 @@ namespace TiendaVirtual.Controllers
             return View(producto);
         }
 
-        // ACTUALIZAR
+        // ACTUALIZAR PRODUCTO CON IMAGEN
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Producto producto)
+        public IActionResult Edit(Producto producto, IFormFile imagen)
         {
-            if (id != producto.Id) return NotFound();
-            if (ModelState.IsValid)
+            var productoBD = _context.Productos.Find(producto.Id);
+            if (productoBD == null)
+                return NotFound();
+
+            // Actualizar datos normales
+            productoBD.Nombre = producto.Nombre;
+            productoBD.Precio = producto.Precio;
+            productoBD.Stock = producto.Stock;
+            productoBD.CategoriaId = producto.CategoriaId;
+
+            // Si sube nueva imagen
+            if (imagen != null)
             {
-                _context.Update(producto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var carpeta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+
+                if (!Directory.Exists(carpeta))
+                    Directory.CreateDirectory(carpeta);
+
+                var ruta = Path.Combine(carpeta, imagen.FileName);
+
+                using (var stream = new FileStream(ruta, FileMode.Create))
+                {
+                    imagen.CopyTo(stream);
+                }
+
+                productoBD.ImagenUrl = "/images/" + imagen.FileName;
             }
-            ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre", producto.CategoriaId);
-            return View(producto);
+
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // CONFIRMAR ELIMINAR
@@ -127,7 +137,8 @@ namespace TiendaVirtual.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var producto = _context.Productos.Find(id);
-            _context.Productos.Remove(producto);
+            if (producto != null)
+                _context.Productos.Remove(producto);
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

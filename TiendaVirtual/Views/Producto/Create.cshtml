@@ -7,11 +7,6 @@
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="mb-3">
-            <label>Imagen</label>
-            <input type="file" name="imagen" class="form-control" />
-        </div>
-
-        <div class="mb-3">
             <label>Nombre</label>
             <input asp-for="Nombre" class="form-control" />
             <span asp-validation-for="Nombre" class="text-danger"></span>
@@ -36,6 +31,11 @@
                 <option value="">-- Seleccione una categoría --</option>
             </select>
             <span asp-validation-for="CategoriaId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Imagen del Producto</label>
+            <input type="file" name="imagen" class="form-control" accept="image/*" />
         </div>
 
         <hr>

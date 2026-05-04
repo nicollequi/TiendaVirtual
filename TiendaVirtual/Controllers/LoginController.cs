@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using TiendaVirtual.Data;
 using TiendaVirtual.Helpers;
@@ -21,19 +21,32 @@ namespace TiendaVirtual.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Index(string correo, string clave)
         {
-            string claveHash = HashHelper.ObtenerHash(clave); 
+            // Limpiar espacios accidentales
+            correo = correo?.Trim() ?? "";
+            clave = clave?.Trim() ?? "";
+
+            string claveHash = HashHelper.ObtenerHash(clave);
 
             var usuario = _context.Usuarios
-    .FirstOrDefault(u => u.Correo == correo && u.Contraseña == claveHash);
+                .FirstOrDefault(u => u.Correo.Trim() == correo && u.Contraseña == claveHash);
+
             if (usuario != null)
             {
                 HttpContext.Session.SetString("Usuario", usuario.Nombre);
                 HttpContext.Session.SetString("Rol", usuario.Rol);
                 return RedirectToAction("Index", "Home");
             }
-            ViewBag.Error = "Credenciales incorrectas";
+
+            // Verificar si el correo existe pero la clave es incorrecta
+            var usuarioExiste = _context.Usuarios.FirstOrDefault(u => u.Correo.Trim() == correo);
+            if (usuarioExiste == null)
+                ViewBag.Error = "El correo no está registrado.";
+            else
+                ViewBag.Error = "Contraseña incorrecta. Verifica tu clave.";
+
             return View();
         }
 

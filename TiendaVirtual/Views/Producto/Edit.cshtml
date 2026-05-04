@@ -2,20 +2,26 @@
 
 <div class="container mt-4">
     <h2>Editar Producto</h2>
-    <form asp-action="Edit" method="post">
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImagenUrl" />
+
         <div class="mb-3">
             <label>Nombre</label>
             <input asp-for="Nombre" class="form-control" />
         </div>
+
         <div class="mb-3">
             <label>Precio</label>
             <input asp-for="Precio" class="form-control" />
         </div>
+
         <div class="mb-3">
             <label>Stock</label>
             <input asp-for="Stock" class="form-control" />
         </div>
+
         <div class="mb-3">
             <label>Categoría</label>
             <select asp-for="CategoriaId" class="form-select"
@@ -23,6 +29,22 @@
                 <option value="">-- Seleccione una categoría --</option>
             </select>
         </div>
+
+        <div class="mb-3">
+            <label>Imagen actual</label><br />
+            @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+            {
+                <img src="@Model.ImagenUrl" style="height:100px; object-fit:cover;" class="mb-2 rounded" />
+            }
+            else
+            {
+                <span class="text-muted">Sin imagen</span>
+            }
+            <br />
+            <label>Cambiar imagen (opcional)</label>
+            <input type="file" name="imagen" class="form-control" accept="image/*" />
+        </div>
+
         <button class="btn btn-warning">Actualizar</button>
         <a href="/Producto" class="btn btn-secondary">Volver</a>
     </form>
