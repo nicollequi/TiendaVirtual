@@ -15,6 +15,29 @@ namespace TiendaVirtual.Controllers
             _context = context;
         }
 
+        // METODO CREAR
+        [HttpPost]
+        public IActionResult Create(Producto producto, IFormFile imagen)
+        {
+            if (imagen != null)
+            {
+                var ruta = Path.Combine(Directory.GetCurrentDirectory(),
+                    "wwwroot/images", imagen.FileName);
+
+                using (var stream = new FileStream(ruta, FileMode.Create))
+                {
+                    imagen.CopyTo(stream);
+                }
+
+                producto.ImagenUrl = "/images/" + imagen.FileName;
+            }
+
+            _context.Productos.Add(producto);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
         // LISTAR PRODUCTOS
         public IActionResult Index()
         {

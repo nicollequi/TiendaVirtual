@@ -3,8 +3,13 @@
 <div class="container mt-4">
     <h2>Crear Producto</h2>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label>Imagen</label>
+            <input type="file" name="imagen" class="form-control" />
+        </div>
 
         <div class="mb-3">
             <label>Nombre</label>

@@ -4,6 +4,7 @@ namespace TiendaVirtual.Models
 {
     public class Producto
     {
+        public string ImagenUrl { get; set; }
         public int Id { get; set; }
 
         [Required]
