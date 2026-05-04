@@ -1,25 +1,38 @@
-﻿<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <h2 class="mb-3">Login</h2>
-            <form method="post">
-                <div class="mb-3">
-                    <label>Correo</label>
-                    <input name="correo" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label>Clave</label>
-                    <input name="clave" type="password" class="form-control" />
-                </div>
-                <button class="btn btn-primary">Ingresar</button>
-                @if (ViewBag.Error != null)
-                {
-                    <div class="text-danger mt-2">@ViewBag.Error</div>
-                }
-            </form>
-            <div class="mt-2">
-                <small class="text-muted">Ingresa tu correo y contraseña registrados.</small>
-            </div>
-        </div>
+@model List<TiendaVirtual.Models.Categoria>
+
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Categorías</h2>
+        <a class="btn btn-success" asp-action="Create">+ Nueva Categoría</a>
     </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Productos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Descripcion</td>
+                    <td><span class="badge bg-secondary">@(item.Productos?.Count ?? 0)</span></td>
+                    <td>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id"
+                           onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

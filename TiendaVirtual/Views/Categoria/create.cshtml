@@ -1,19 +1,35 @@
-﻿@model TiendaVirtual.Models.Categoria
+@model TiendaVirtual.Models.Categoria
+
+@{
+    ViewData["Title"] = "Nueva Categoría";
+}
 
 <div class="container mt-4">
-    <h2>Crear Categoría</h2>
-    <form asp-action="Create" method="post">
-        <div class="mb-3">
-            <label>Nombre</label>
-            <input asp-for="Nombre" class="form-control" />
-            <span asp-validation-for="Nombre" class="text-danger"></span>
+    <h2>Nueva Categoría</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-5">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Nombre" class="form-label"></label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Descripcion" class="form-label"></label>
+                    <input asp-for="Descripcion" class="form-control" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+            </form>
         </div>
-        <div class="mb-3">
-            <label>Descripción</label>
-            <input asp-for="Descripcion" class="form-control" />
-            <span asp-validation-for="Descripcion" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="/Categoria" class="btn btn-secondary">Volver</a>
-    </form>
+    </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

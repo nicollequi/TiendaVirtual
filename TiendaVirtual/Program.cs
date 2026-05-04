@@ -3,26 +3,21 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-// Registrar Entity Framework
-builder.Services.AddDbContext<TiendaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TiendaConnection")));
-
-// Registrar Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Name = ".TiendaVirtual.Session";
 });
+
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<TiendaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TiendaConnection")));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -32,11 +27,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();         // <- AQUI, antes de UseAuthorization
 app.UseAuthorization();
-app.UseSession(); // DEBE ir después de UseRouting y antes de MapControllerRoute
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
-    
+
 app.Run();

@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +16,6 @@ namespace TiendaVirtual.Controllers
             _context = context;
         }
 
-        // GET: Usuarios
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
@@ -29,22 +24,17 @@ namespace TiendaVirtual.Controllers
             return View(await _context.Usuarios.ToListAsync());
         }
 
-        // GET: Usuarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
             if (id == null) return NotFound();
-
-            var usuarios = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuarios == null) return NotFound();
-
-            return View(usuarios);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(m => m.Id == id);
+            if (usuario == null) return NotFound();
+            return View(usuario);
         }
 
-        // GET: Usuarios/Create
         public IActionResult Create()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
@@ -54,61 +44,68 @@ namespace TiendaVirtual.Controllers
             return View();
         }
 
-        // POST: Usuarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Usuario usuarios)
+        public IActionResult Create(Usuario usuario)
         {
             if (ModelState.IsValid)
             {
-                usuarios.Contraseña = HashHelper.ObtenerHash(usuarios.Contraseña);
-                _context.Usuarios.Add(usuarios);
+                usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
+                _context.Usuarios.Add(usuario);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            // Recargar roles si hay error de validación
             ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" });
-            return View(usuarios);
+            return View(usuario);
         }
 
-        // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
             if (id == null) return NotFound();
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null) return NotFound();
 
-            var usuarios = await _context.Usuarios.FindAsync(id);
-            if (usuarios == null) return NotFound();
-
-            ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" }, usuarios.Rol);
-            return View(usuarios);
+            // Limpiar contraseña para no mostrar el hash
+            usuario.Contraseña = string.Empty;
+            ViewBag.Roles = new SelectList(new[] { "administrador", "cliente" }, usuario.Rol);
+            return View(usuario);
         }
 
-        // POST: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Correo,Contraseña,Rol,Celular")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, Usuario usuario)
         {
             if (id != usuario.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
-                try
+                // Si dejó la contraseña vacía, conservar la anterior
+                if (string.IsNullOrWhiteSpace(usuario.Contraseña))
+                {
+                    var contraActual = await _context.Usuarios.AsNoTracking()
+                        .Where(u => u.Id == id)
+                        .Select(u => u.Contraseña)
+                        .FirstOrDefaultAsync();
+                    usuario.Contraseña = contraActual ?? string.Empty;
+                }
+                else
                 {
                     usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
+                }
 
+                try
+                {
                     _context.Update(usuario);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.Id))
+                    if (!_context.Usuarios.Any(e => e.Id == usuario.Id))
                         return NotFound();
-                    else
-                        throw;
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -117,37 +114,25 @@ namespace TiendaVirtual.Controllers
             return View(usuario);
         }
 
-        // GET: Usuarios/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
             if (id == null) return NotFound();
-
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(m => m.Id == id);
             if (usuario == null) return NotFound();
-
             return View(usuario);
         }
 
-        // POST: Usuarios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
-                _context.Usuarios.Remove(usuario);
-
+            if (usuario != null) _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuarios.Any(e => e.Id == id);
         }
     }
 }
