@@ -11,143 +11,47 @@ using TiendaVirtual.Models;
 
 namespace TiendaVirtual.Controllers
 {
-    public class UsuariosController : Controller
+    public class UsuarioController : Controller
     {
-        private readonly TiendaContext _context;
 
-        public UsuariosController(TiendaContext context)
+        private readonly TiendaContext _context;
+        public UsuarioController(TiendaContext context)
         {
             _context = context;
         }
 
-        // GET: Usuarios
-        public async Task<IActionResult> Index()
+        // GET: UsusarioController
+        public ActionResult Index()
         {
-            if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Create");
-
-            return View(await _context.Usuarios.ToListAsync());
-        }
-
-        // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Create");
-
-            if (id == null) return NotFound();
-
-            var usuarios = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuarios == null) return NotFound();
+            var usuarios = _context.Usuarios
+            .ToList();
 
             return View(usuarios);
         }
 
-        // GET: Usuarios/Create
-        public IActionResult Create()
-        {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Create");
 
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
+        // GET: UsusarioController/Create
+        public ActionResult Create()
+        {
+            ViewBag.Usuarios = _context.Usuarios.ToList();
             return View();
         }
 
-        // POST: Usuarios/Create
+        // POST: UsusarioController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Usuario usuarios)
+        public ActionResult Create(Usuario usuario)
         {
             if (ModelState.IsValid)
             {
-                usuarios.Contraseña = HashHelper.ObtenerHash(usuarios.Contraseña);
-                _context.Usuarios.Add(usuarios);
+                usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
+
+                _context.Usuarios.Add(usuario);
                 _context.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
-            // Recargar roles si hay error de validación
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" });
-            return View(usuarios);
-        }
-
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Create");
-
-            if (id == null) return NotFound();
-
-            var usuarios = await _context.Usuarios.FindAsync(id);
-            if (usuarios == null) return NotFound();
-
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuarios.Rol);
-            return View(usuarios);
-        }
-
-        // POST: Usuarios/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Correo,Contraseña,Rol,Celular")] Usuario usuario)
-        {
-            if (id != usuario.Id) return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    usuario.Contraseña = HashHelper.ObtenerHash(usuario.Contraseña);
-
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsuarioExists(usuario.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewBag.Roles = new SelectList(new[] { "Admin", "Cliente" }, usuario.Rol);
             return View(usuario);
-        }
-
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (HttpContext.Session.GetString("Usuario") == null)
-                return RedirectToAction("Index", "Create");
-
-            if (id == null) return NotFound();
-
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null) return NotFound();
-
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
-                _context.Usuarios.Remove(usuario);
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuarios.Any(e => e.Id == id);
         }
     }
 }
