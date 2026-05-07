@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace TiendaVirtual.Models
 {
@@ -6,12 +6,14 @@ namespace TiendaVirtual.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Nombre { get; set; }
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
+        [Display(Name = "Nombre")]
+        public string Nombre { get; set; } = string.Empty;
 
         [StringLength(200)]
-        public string Descripcion { get; set; }
+        [Display(Name = "Descripción")]
+        public string Descripcion { get; set; } = string.Empty;
 
         public List<Producto>? Productos { get; set; }
     }

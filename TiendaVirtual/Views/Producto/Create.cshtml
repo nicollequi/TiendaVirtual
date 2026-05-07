@@ -3,7 +3,7 @@
 <div class="container mt-4">
     <h2>Crear Producto</h2>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="mb-3">
@@ -31,6 +31,11 @@
                 <option value="">-- Seleccione una categoría --</option>
             </select>
             <span asp-validation-for="CategoriaId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Imagen del Producto</label>
+            <input type="file" name="imagen" class="form-control" accept="image/*" />
         </div>
 
         <hr>

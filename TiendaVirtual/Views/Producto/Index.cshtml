@@ -1,41 +1,41 @@
 ﻿@model List<TiendaVirtual.Models.Producto>
 
-@{
-    ViewData["Title"] = "Lista de Productos";
-}
-
 <div class="container mt-4">
-    <h2 class="mb-3">Lista de Productos</h2>
+    <h2 class="mb-4 text-center">Productos</h2>
+    <a class="btn btn-success mb-3" href="/Producto/Create">
+        + Nuevo Producto
+    </a>
 
-    <a class="btn btn-success mb-3" href="/Producto/Create">+ Nuevo Producto</a>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow">
 
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Categoría</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Nombre</td>
-                    <td>@item.Precio</td>
-                    <td>@item.Stock</td>
-                    <td>@item.Categoria?.Nombre</td>
-                    <td>
-                        <a class="btn btn-warning btn-sm" href="/Producto/Edit/@item.Id">Editar</a>
-                        @if(Context.Session.GetString("Rol") == "administrador")
+                    <img src="@item.ImagenUrl"
+                         class="card-img-top"
+                         style="height:200px; object-fit:cover;" />
+
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Nombre</h5>
+
+                        <p class="card-text">
+                            Precio: @item.Precio <br />
+                            Stock: @item.Stock <br />
+                            Categoria: @item.Categoria?.Nombre
+                        </p>
+
+                        <a href="/Producto/Edit/@item.Id"
+                           class="btn btn-warning btn-sm">Editar</a>
+
+                        @if (Context.Session.GetString("Rol") == "administrador")
                         {
-                            <a class="btn btn-danger btn-sm" href="/Producto/Delete/@item.Id">Eliminar</a>
-                        }                     
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                            <a href="/Producto/Delete/@item.Id"
+                               class="btn btn-danger btn-sm">Eliminar</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

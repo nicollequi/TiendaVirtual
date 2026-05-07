@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TiendaVirtual.Data;
@@ -9,25 +9,23 @@ namespace TiendaVirtual.Controllers
     public class ProductoController : Controller
     {
         private readonly TiendaContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductoController(TiendaContext context)
+        public ProductoController(TiendaContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
-        // LISTAR PRODUCTOS
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
-            var productos = _context.Productos
-                .Include(p => p.Categoria)
-                .ToList();
+            var productos = _context.Productos.Include(p => p.Categoria).ToList();
             return View(productos);
         }
 
-        // FORMULARIO CREAR
         public IActionResult Create()
         {
             if (HttpContext.Session.GetString("Usuario") == null)
@@ -37,22 +35,27 @@ namespace TiendaVirtual.Controllers
             return View();
         }
 
-        // GUARDAR
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Producto producto)
+        public async Task<IActionResult> Create(Producto producto, IFormFile? imagen)
         {
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
             if (ModelState.IsValid)
             {
-                _context.Add(producto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (imagen != null && imagen.Length > 0)
+                    producto.ImagenUrl = await GuardarImagen(imagen);
+
+                _context.Productos.Add(producto);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
-            ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre");
+
+            ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre", producto.CategoriaId);
             return View(producto);
         }
 
-        // FORMULARIO EDITAR
         public async Task<IActionResult> Edit(int? id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
@@ -61,36 +64,45 @@ namespace TiendaVirtual.Controllers
             if (id == null) return NotFound();
             var producto = await _context.Productos.FindAsync(id);
             if (producto == null) return NotFound();
+
             ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre", producto.CategoriaId);
             return View(producto);
         }
 
-        // ACTUALIZAR
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Producto producto)
+        public async Task<IActionResult> Edit(Producto producto, IFormFile? imagen)
         {
-            if (id != producto.Id) return NotFound();
+            if (HttpContext.Session.GetString("Usuario") == null)
+                return RedirectToAction("Index", "Login");
+
             if (ModelState.IsValid)
             {
-                _context.Update(producto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var productoBD = _context.Productos.Find(producto.Id);
+                if (productoBD == null) return NotFound();
+
+                productoBD.Nombre = producto.Nombre;
+                productoBD.Precio = producto.Precio;
+                productoBD.Stock = producto.Stock;
+                productoBD.CategoriaId = producto.CategoriaId;
+
+                if (imagen != null && imagen.Length > 0)
+                    productoBD.ImagenUrl = await GuardarImagen(imagen);
+
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
+
             ViewBag.CategoriaId = new SelectList(_context.Categorias, "Id", "Nombre", producto.CategoriaId);
             return View(producto);
         }
 
-        // CONFIRMAR ELIMINAR
         public IActionResult Delete(int id)
         {
             if (HttpContext.Session.GetString("Usuario") == null)
                 return RedirectToAction("Index", "Login");
 
-            var rol = HttpContext.Session.GetString("Rol");
-
-            // SOLO ADMIN PUEDE ELIMINAR
-            if (rol != "administrador")
+            if (HttpContext.Session.GetString("Rol") != "administrador")
                 return RedirectToAction("Index");
 
             var producto = _context.Productos.Find(id);
@@ -98,15 +110,25 @@ namespace TiendaVirtual.Controllers
             return View(producto);
         }
 
-        // ELIMINAR
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             var producto = _context.Productos.Find(id);
-            _context.Productos.Remove(producto);
+            if (producto != null) _context.Productos.Remove(producto);
             _context.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        private async Task<string> GuardarImagen(IFormFile file)
+        {
+            var carpeta = Path.Combine(_env.WebRootPath, "images");
+            Directory.CreateDirectory(carpeta);
+            var nombre = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var ruta = Path.Combine(carpeta, nombre);
+            using var stream = new FileStream(ruta, FileMode.Create);
+            await file.CopyToAsync(stream);
+            return $"/images/{nombre}";
         }
     }
 }

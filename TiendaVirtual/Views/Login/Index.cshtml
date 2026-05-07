@@ -1,25 +1,28 @@
-﻿<div class="container mt-4">
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <h2 class="mb-3">Login</h2>
-            <form method="post">
+            <h2 class="mb-3">Iniciar Sesión</h2>
+            <form asp-controller="Login" asp-action="Index" method="post">
+                @Html.AntiForgeryToken()
                 <div class="mb-3">
                     <label>Correo</label>
-                    <input name="correo" class="form-control" />
+                    <input name="correo" class="form-control" autocomplete="off" />
                 </div>
                 <div class="mb-3">
                     <label>Clave</label>
                     <input name="clave" type="password" class="form-control" />
                 </div>
-                <button class="btn btn-primary">Ingresar</button>
+                <button type="submit" class="btn btn-primary w-100">Ingresar</button>
                 @if (ViewBag.Error != null)
                 {
-                    <div class="text-danger mt-2">@ViewBag.Error</div>
+                    <div class="alert alert-danger mt-3">@ViewBag.Error</div>
                 }
             </form>
-            <div class="mt-2">
-                <small class="text-muted">Usa tu correo y tu Rol como clave (ej: Administrador)</small>
-            </div>
         </div>
     </div>
 </div>

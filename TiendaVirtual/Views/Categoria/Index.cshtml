@@ -1,20 +1,21 @@
-﻿@model List<TiendaVirtual.Models.Categoria>
+@model List<TiendaVirtual.Models.Categoria>
 
 @{
-    ViewData["Title"] = "Lista de Categorías";
+    ViewData["Title"] = "Categorías";
 }
 
 <div class="container mt-4">
-    <h2 class="mb-3">Lista de Categorías</h2>
-
-    <a class="btn btn-success mb-3" href="/Categoria/Create">+ Nueva Categoría</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Categorías</h2>
+        <a class="btn btn-success" asp-action="Create">+ Nueva Categoría</a>
+    </div>
 
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
-                <th>Estado</th>
+                <th>Productos</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -24,19 +25,11 @@
                 <tr>
                     <td>@item.Nombre</td>
                     <td>@item.Descripcion</td>
+                    <td><span class="badge bg-secondary">@(item.Productos?.Count ?? 0)</span></td>
                     <td>
-                        @if (String.IsNullOrEmpty(item.Nombre))
-                        {
-                            <span class="text-danger">Sin nombre</span>
-                        }
-                        else
-                        {
-                            <span class="text-success">Activa</span>
-                        }
-                    </td>
-                    <td>
-                        <a class="btn btn-warning btn-sm" href="/Categoria/Edit/@item.Id">Editar</a>
-                        <a class="btn btn-danger btn-sm" href="/Categoria/Delete/@item.Id">Eliminar</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id"
+                           onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</a>
                     </td>
                 </tr>
             }

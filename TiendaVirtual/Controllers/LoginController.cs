@@ -1,9 +1,6 @@
-﻿using Humanizer;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using TiendaVirtual.Data;
 using TiendaVirtual.Helpers;
-using TiendaVirtual.Models;
 
 namespace TiendaVirtual.Controllers
 {
@@ -24,17 +21,23 @@ namespace TiendaVirtual.Controllers
         [HttpPost]
         public IActionResult Index(string correo, string clave)
         {
-            string claveHash = HashHelper.ObtenerHash(clave); 
+            correo = correo?.Trim() ?? "";
+            clave = clave?.Trim() ?? "";
+
+            string claveHash = HashHelper.ObtenerHash(clave);
 
             var usuario = _context.Usuarios
-    .FirstOrDefault(u => u.Correo == correo && u.Contraseña == claveHash);
+                .FirstOrDefault(u => u.Correo.Trim() == correo && u.Contraseña == claveHash);
+
             if (usuario != null)
             {
                 HttpContext.Session.SetString("Usuario", usuario.Nombre);
                 HttpContext.Session.SetString("Rol", usuario.Rol);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); // <- va a Home
             }
-            ViewBag.Error = "Credenciales incorrectas";
+
+            var existe = _context.Usuarios.FirstOrDefault(u => u.Correo.Trim() == correo);
+            ViewBag.Error = existe == null ? "El correo no está registrado." : "Contraseña incorrecta.";
             return View();
         }
 

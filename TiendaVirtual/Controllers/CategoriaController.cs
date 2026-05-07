@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TiendaVirtual.Data;
 using TiendaVirtual.Models;
@@ -14,26 +14,17 @@ namespace TiendaVirtual.Controllers
             _context = context;
         }
 
-        // LISTAR
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Login");
-
-            var categorias = _context.Categorias.ToList();
+            var categorias = _context.Categorias.Include(c => c.Productos).ToList();
             return View(categorias);
         }
 
-        // FORMULARIO CREAR
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Login");
-
             return View();
         }
 
-        // GUARDAR
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Categoria categoria)
@@ -47,18 +38,13 @@ namespace TiendaVirtual.Controllers
             return View(categoria);
         }
 
-        // FORMULARIO EDITAR
         public IActionResult Edit(int id)
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Login");
-
             var categoria = _context.Categorias.Find(id);
             if (categoria == null) return NotFound();
             return View(categoria);
         }
 
-        // ACTUALIZAR
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Categoria categoria)
@@ -73,24 +59,20 @@ namespace TiendaVirtual.Controllers
             return View(categoria);
         }
 
-        // CONFIRMAR ELIMINAR
         public IActionResult Delete(int id)
         {
-            if (HttpContext.Session.GetString("Usuarios") == null)
-                return RedirectToAction("Index", "Login");
-
             var categoria = _context.Categorias.Find(id);
             if (categoria == null) return NotFound();
             return View(categoria);
         }
 
-        // ELIMINAR
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             var categoria = _context.Categorias.Find(id);
-            _context.Categorias.Remove(categoria);
+            if (categoria != null)
+                _context.Categorias.Remove(categoria);
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
