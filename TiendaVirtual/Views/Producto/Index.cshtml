@@ -1,9 +1,11 @@
 ﻿@model List<TiendaVirtual.Models.Producto>
-
 <div class="container mt-4">
     <h2 class="mb-4 text-center">Productos</h2>
     <a class="btn btn-success mb-3" href="/Producto/Create">
         + Nuevo Producto
+    </a>
+    <a class="btn btn-success mb-3" href="/Producto/Carrito">
+        Ver Carrito
     </a>
 
     <div class="row">
@@ -11,28 +13,34 @@
         {
             <div class="col-md-3 mb-4">
                 <div class="card h-100 shadow">
-
                     <img src="@item.ImagenUrl"
                          class="card-img-top"
                          style="height:200px; object-fit:cover;" />
-
                     <div class="card-body">
                         <h5 class="card-title">@item.Nombre</h5>
-
                         <p class="card-text">
                             Precio: @item.Precio <br />
                             Stock: @item.Stock <br />
                             Categoria: @item.Categoria?.Nombre
                         </p>
-
                         <a href="/Producto/Edit/@item.Id"
                            class="btn btn-warning btn-sm">Editar</a>
-
                         @if (Context.Session.GetString("Rol") == "administrador")
                         {
                             <a href="/Producto/Delete/@item.Id"
                                class="btn btn-danger btn-sm">Eliminar</a>
                         }
+
+                        <hr>
+                        <form asp-action="AgregarCarrito" method="post">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="number" name="cantidad" value="1" min="1"
+                                   class="form-control mb-2" />
+                            <button class="btn btn-primary w-100">
+                                Agregar al carrito
+                            </button>
+                        </form>
+
                     </div>
                 </div>
             </div>
