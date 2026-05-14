@@ -19,6 +19,22 @@ namespace TiendaVirtual.Controllers
         }
         public IActionResult AgregarCarrito(int id, int cantidad)
         {
+            var producto = _context.Productos.Find(id);
+
+            // VALIDAR STOCK
+            if (producto == null || producto.Stock == 0)
+            {
+                TempData["Error"] = "Producto sin existencias";
+                return RedirectToAction("Index");
+            }
+
+            // VALIDAR CANTIDAD
+            if (cantidad > producto.Stock)
+            {
+                TempData["Error"] = "No hay disponibles tantas unidades";
+                return RedirectToAction("Index");
+            }
+
             var carritoJson = HttpContext.Session.GetString("Carrito");
             List<CarritoItem> carrito;
             if (carritoJson == null)
@@ -34,6 +50,13 @@ namespace TiendaVirtual.Controllers
 
             if (item != null)
             {
+                // VALIDAR SUMA TOTAL
+                if ((item.Cantidad + cantidad) > producto.Stock)
+                {
+                    TempData["Error"] = "No hay suficientes unidades disponibles";
+                    return RedirectToAction("Index");
+                }
+
                 item.Cantidad += cantidad;
             }
             else
@@ -46,6 +69,10 @@ namespace TiendaVirtual.Controllers
             }
 
             HttpContext.Session.SetString("Carrito", JsonSerializer.Serialize(carrito));
+
+            // MENSAJE ÉXITO
+            TempData["Mensaje"] = "Producto agregado al carrito";
+
             return RedirectToAction("Index");
         }
         public IActionResult Carrito()
